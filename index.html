@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>LeitWerk – Schaltpläne</title>
+<link rel="icon" href="symbol.svg" type="image/svg+xml">
+<link rel="icon" href="symbol/symbol-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="symbol/symbol-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1c2430">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LeitWerk">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Startseite nach dem Entwurf in Claude Design (https://claude.ai/artifact/2XPmp6udRURuTcuAUnPizQ,
+     Tafel „Startseite“, von Franz am 2026-09-25 abgenommen). Liegt beim Start über allem;
+     das LeitWerk-Zeichen im Kopf holt sie zurück. -->
+<div id="startseite" class="startseite" role="dialog" aria-label="Startseite" hidden>
+  <nav class="start-leiste">
+    <div class="start-marke">
+      <svg viewBox="0 0 26 26" width="34" height="34" aria-hidden="true"><path d="M3 5h20M3 21h20M9 5v5M9 16v5M6.5 10h5M6.5 16l5-6M19 5v5M19 16v5"/><circle cx="19" cy="13" r="3"/></svg>
+      LeitWerk
+    </div>
+    <div class="start-knoepfe">
+      <button id="startNeu" class="start-hauptknopf">Neues Projekt</button>
+      <button id="startOeffnen">Datei öffnen …</button>
+    </div>
+    <span class="abstand"></span>
+    <div class="start-fuss">
+      <button id="startRueckmeldung" class="start-link kupfern">Rückmeldung geben</button>
+      <button id="startLuecken" class="start-link">Was ist neu · Bekannte Lücken</button>
+      <span class="start-version mono" id="startVersion"></span>
+    </div>
+  </nav>
+  <main class="start-haupt">
+    <h1 id="startGruss">Guten Tag</h1>
+    <section class="start-abschnitt">
+      <h2>Neu anfangen</h2>
+      <div class="start-kacheln">
+        <button class="start-kachel" id="kachelLeer">
+          <span class="kachel-bild"><svg viewBox="0 0 120 84" width="120" height="84" aria-hidden="true"><rect x="4" y="4" width="112" height="76" class="bild-rand"/><path d="M4 66h112M80 66v14" class="bild-rand"/><path d="M60 26v24M48 38h24" class="bild-kupfer"/></svg></span>
+          <span class="kachel-name">Leeres Projekt</span>
+          <span class="kachel-text">Ein leeres Blatt, A4 quer</span>
+        </button>
+        <button class="start-kachel" id="kachelFolgeschaltung">
+          <span class="kachel-bild"><svg viewBox="0 0 120 84" width="120" height="84" aria-hidden="true" class="bild-strich"><path d="M10 10h100M10 74h100M34 10v16M28 26l6 10M34 36v38M60 10v16M54 26l6 10M60 36v12M55 51l10 10M65 51l-10 10M60 63v11M86 10v26M86 52v22"/><circle cx="60" cy="56" r="7"/><rect x="80" y="36" width="12" height="16"/></svg></span>
+          <span class="kachel-name">Folgeschaltung</span>
+          <span class="kachel-text">Vorlage · Haupt- und Steuerstromkreis</span>
+        </button>
+        <button class="start-kachel" id="kachelUnterverteilung">
+          <span class="kachel-bild"><svg viewBox="0 0 120 84" width="120" height="84" aria-hidden="true" class="bild-strich"><rect x="14" y="8" width="92" height="68" rx="2"/><path d="M20 22h80M20 44h80M20 66h80"/><rect x="24" y="14" width="8" height="16"/><rect x="36" y="14" width="8" height="16"/><rect x="48" y="14" width="8" height="16"/><rect x="60" y="14" width="16" height="16"/><rect x="24" y="36" width="8" height="16"/><rect x="36" y="36" width="8" height="16"/><rect x="48" y="36" width="8" height="16"/><rect x="24" y="58" width="72" height="6" class="bild-kupfer"/></svg></span>
+          <span class="kachel-name">Unterverteilung</span>
+          <span class="kachel-text">Vorlage · 2 Stromlaufpläne, Stromkreise, Prüfprotokoll</span>
+        </button>
+        <button class="start-kachel tour" id="kachelTour">
+          <span class="kachel-bild"><svg viewBox="0 0 48 48" width="56" height="56" aria-hidden="true" class="bild-tour"><circle cx="24" cy="24" r="18"/><path d="M20 16l12 8-12 8z"/></svg></span>
+          <span class="kachel-name">Kurze Tour</span>
+          <span class="kachel-text">In 5 Schritten zum ersten Plan</span>
+        </button>
+      </div>
+    </section>
+    <section class="start-abschnitt start-zuletzt">
+      <div class="start-zeile">
+        <h2>Zuletzt verwendet</h2>
+        <span class="start-hinweis">im Browser gespeichert – zum Sichern „Als Datei speichern“</span>
+      </div>
+      <div class="start-liste" id="startListe"></div>
+    </section>
+    <footer class="start-gewaehr">
+      <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M10 2l8.5 15h-17z"/><path d="M10 8v4M10 14.5v0.2"/></svg>
+      <span><strong>Testversion, ohne Gewähr.</strong> LeitWerk hilft beim Zeichnen und beim Prüfprotokoll nach DIN VDE 0100-600 – die Verantwortung bleibt bei der Elektrofachkraft.</span>
+    </footer>
+  </main>
+</div>
+
+<!-- Kopf und Werkzeugleiste nach dem Entwurf in Claude Design
+     (https://claude.ai/artifact/GGJH33VZWy1t85bKLav7xc): oben dunkel Marke, Datei und
+     Blätter als Registerreiter, darunter hell die Werkzeuge in Gruppen. Dieselben
+     Bedienelemente wie vorher, nur geordnet. -->
+<header class="kopfleiste">
+  <div class="kopf-zeile">
+    <button class="marke" id="startseiteZeigen" title="Zur Startseite – Projekte, Vorlagen, Rückmeldung">
+      <svg viewBox="0 0 26 26" width="24" height="24" aria-hidden="true"><path d="M3 5h20M3 21h20M9 5v5M9 16v5M6.5 10h5M6.5 16l5-6M19 5v5M19 16v5"/><circle cx="19" cy="13" r="3"/></svg>
+      LeitWerk
+    </button>
+    <button class="projektname" id="projektname" title="Projektangaben: Auftraggeber, Anlage, Errichter, Zeichnungsnummer, Änderungsstand"></button>
+    <span class="abstand"></span>
+    <div class="dateiknoepfe">
+      <button id="neu" title="Neues, leeres Projekt mit einem leeren Blatt anfangen – das jetzige bleibt im Browser gespeichert">Neu</button>
+      <button id="importieren" title="Eine LeitWerk-Datei (.leitwerk oder .json) öffnen – sie wird ein neues Projekt im Browser">Datei öffnen …</button>
+      <input type="file" id="importDatei" accept=".leitwerk,.json,application/json" hidden>
+      <button id="exportieren" title="Das Projekt als Datei speichern – zum Sichern und Weitergeben. Im Browser wird ohnehin nach jeder Änderung gespeichert">Als Datei speichern</button>
+      <button id="rueckmeldungOeffnen" title="Etwas klemmt oder fehlt? Rückmeldung an Franz – mit Bild vom Blatt">Rückmeldung</button>
+      <button id="claudeOeffnen" title="Claude eine Frage stellen, den Plan prüfen oder eine Schaltung zeichnen lassen – Austausch per Datei, ohne Internet">Claude…</button>
+      <button id="drucken" class="hauptknopf" title="Alle Blätter drucken oder als PDF speichern – A4 quer, als Vektor">Drucken / PDF</button>
+    </div>
+  </div>
+  <nav class="blatttabs-zeile" aria-label="Blätter">
+    <div class="blatttabs" id="blatttabs"></div>
+    <button id="blattHinzufuegen" class="tab-plus" title="Neues Blatt ans Ende anhängen" aria-label="Neues Blatt anhängen">+</button>
+  </nav>
+</header>
+
+<div class="werkzeugleiste">
+  <div class="gruppe verlauf">
+    <button id="rueckgaengig" class="symbolknopf" title="Rückgängig (Strg+Z)" aria-label="Rückgängig" disabled>
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M5.5 3.5 2.5 6.5l3 3M2.5 6.5h7a3.5 3.5 0 0 1 0 7h-2"/></svg>
+    </button>
+    <button id="wiederholen" class="symbolknopf" title="Wiederholen (Strg+Y)" aria-label="Wiederholen" disabled>
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M10.5 3.5l3 3-3 3M13.5 6.5h-7a3.5 3.5 0 0 0 0 7h2"/></svg>
+    </button>
+  </div>
+  <span class="trenner"></span>
+  <div class="gruppe">
+    <span class="gruppen-name">Blatt</span>
+    <input id="blattTitel" type="text" size="18" title="Titel des aktiven Blatts" aria-label="Blatttitel">
+    <select id="blattArt" title="Was dieses Blatt ist – Zeichenblatt, eine Liste, die sich selbst rechnet, oder das Prüfprotokoll"></select>
+    <button id="blattEinfuegenDazwischen" title="Neues Blatt nach dem aktiven Blatt einfügen">Einfügen</button>
+    <button id="blattLoeschen" class="gefahr" title="Aktives Blatt löschen">Löschen</button>
+  </div>
+  <span class="trenner"></span>
+  <div class="umschalter" role="group" aria-label="Werkzeug">
+    <button id="werkzeugAuswaehlen" class="aktiv" title="Bauteile auswählen, verschieben, löschen">Auswählen</button>
+    <button id="werkzeugVerbinden" class="nur-zeichenblatt" title="Zwei Anschlusspunkte über Strompfade hinweg verbinden">Verbinden</button>
+    <button id="werkzeugStift" class="nur-zeichenblatt" title="Mit Stift, Finger oder Maus Notizen über den Plan schreiben">Stift</button>
+  </div>
+  <select id="betaetigungAuswahl" class="nur-zeichenblatt" title="Betätigung für das nächste aus der Palette platzierte Symbol"></select>
+  <div class="auswahl-kasten" id="auswahlKasten" hidden>
+    <span class="gruppen-name" id="auswahlArt">Bauteil</span>
+    <input id="bauteilBmk" type="text" size="6" placeholder="BMK" class="mono"
+      title="Betriebsmittelkennzeichen des ausgewählten Bauteils, von Hand überschreibbar" hidden>
+    <input id="bauteilOrt" type="text" size="7" placeholder="+Ort" class="mono"
+      title="Einbauort nach DIN EN 81346, z. B. +UV-EG – leer = keiner. Neue Bauteile übernehmen den zuletzt vergebenen Ort dieses Blatts" hidden>
+    <input id="klemmeKabel" type="text" size="6" placeholder="Kabel" class="mono"
+      title="Kabel und Ader dieser Klemme, z. B. -W1:3 oder -W1:bn – leer = kein Kabel" hidden>
+    <input id="kabelTyp" type="text" size="14" placeholder="Kabeltyp"
+      title="Typ des Kabels, gilt für alle seine Adern, z. B. NYM-J 5×1,5" hidden>
+    <span id="bindungsfelder" class="bindungsfelder" hidden>
+      <label title="Oberes Ende des ausgewählten Bauteils (bei mehreren Polen: Pol 1, die weiteren an die folgenden Schienen)">oben an
+        <select id="schieneOben"></select></label>
+      <label title="Unteres Ende des ausgewählten Bauteils (bei mehreren Polen: Pol 1, die weiteren an die folgenden Schienen)">unten an
+        <select id="schieneUnten"></select></label>
+    </span>
+    <button id="bauteilLoeschen" class="nur-zeichenblatt symbolknopf" title="Ausgewähltes Bauteil löschen" aria-label="Bauteil löschen">
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 8.5h5.6l.7-8.5"/></svg>
+    </button>
+  </div>
+  <select id="schienenVorlage" class="nur-zeichenblatt" title="Sammelschienen dieses Blatts"></select>
+  <label class="anschlussnummern-schalter nur-zeichenblatt" title="Anschlussnummern auf diesem Blatt ein-/ausblenden">
+    <input type="checkbox" id="anschlussnummernSichtbar" checked> Anschlussnummern
+  </label>
+  <label class="anschlussnummern-schalter nur-zeichenblatt" title="Freihand-Notizen auf diesem Blatt ein-/ausblenden – gedruckt wird nur, was eingeblendet ist">
+    <input type="checkbox" id="notizenSichtbar" checked> Notizen
+  </label>
+  <span class="abstand"></span>
+  <div class="gruppe zoom">
+    <button id="zoomMinus" title="Verkleinern" aria-label="Verkleinern">–</button>
+    <button id="zoomZuruecksetzen" title="Ganzes Blatt einpassen">Einpassen</button>
+    <button id="zoomPlus" title="Vergrößern" aria-label="Vergrößern">+</button>
+  </div>
+</div>
+
+<div id="meldungsleiste" class="meldungsleiste" hidden role="status" aria-live="polite">
+  <span id="meldungText" class="meldung-text"></span>
+  <span id="meldungAktionen" class="meldung-aktionen"></span>
+</div>
+
+<div class="rumpf">
+  <aside class="symbolpalette nur-zeichenblatt" id="symbolpalette" title="Symbol wählen, dann aufs Blatt tippen"></aside>
+
+  <main class="zeichenflaeche-bereich">
+    <svg id="zeichenflaeche" class="zeichenflaeche" viewBox="0 0 297 210" xmlns="http://www.w3.org/2000/svg">
+      <g id="blattinhalt"></g>
+    </svg>
+    <!-- Formularblatt (Prüfprotokoll): statt der Zeichenfläche ein Formular, siehe app.js. -->
+    <div id="formular" class="formular" hidden></div>
+  </main>
+
+  <aside class="querverweise-panel">
+    <h2>Querverweise</h2>
+    <p class="hinweis">rechnen sich bei jeder Änderung neu – getippt wird hier nichts</p>
+    <div id="querverweiseListe"></div>
+  </aside>
+</div>
+
+<!-- Projektangaben und Änderungsstand (Schriftfeld nach DIN EN 61082), Klick auf den Projektnamen. -->
+<div id="projektFenster" class="claude-fenster" hidden role="dialog" aria-labelledby="projektTitel">
+  <div class="claude-karte">
+    <div class="claude-kopf">
+      <h2 id="projektTitel">Projektangaben</h2>
+      <button id="projektSchliessen" class="symbolknopf" title="Schließen" aria-label="Schließen">×</button>
+    </div>
+    <p class="claude-schritt">Stehen im Schriftfeld jedes Blatts und im Prüfprotokoll – jederzeit über den Projektnamen oben änderbar</p>
+    <div class="projekt-felder" id="projektFelder"></div>
+    <p class="claude-schritt">Änderungsstand – der letzte Eintrag steht im Schriftfeld jedes Blatts</p>
+    <div class="projekt-aenderungen" id="projektAenderungen"></div>
+    <button id="aenderungNeu">+ Änderung</button>
+  </div>
+</div>
+
+<!-- Claude-Aufsatz (Stufe 3): Austausch per Datei, siehe FORMAT.md „Claude-Aufsatz“. -->
+<div id="claudeFenster" class="claude-fenster" hidden role="dialog" aria-labelledby="claudeTitel">
+  <div class="claude-karte">
+    <div class="claude-kopf">
+      <h2 id="claudeTitel">Claude fragen</h2>
+      <button id="claudeSchliessen" class="symbolknopf" title="Schließen" aria-label="Schließen">×</button>
+    </div>
+    <p class="claude-schritt"><b>1</b> Auftrag schreiben und als Datei speichern</p>
+    <select id="claudeAufgabe" aria-label="Aufgabe"></select>
+    <textarea id="claudeText" rows="3" placeholder="Was soll Claude tun? z. B. „Zeichne eine Wechselschaltung für den Flur.“"></textarea>
+    <button id="claudeAuftrag" class="hauptknopf">Auftrag speichern</button>
+    <p class="claude-schritt"><b>2</b> Die Datei bei Claude hochladen (Chat oder Claude Code). Claude antwortet mit einer Datei.</p>
+    <p class="claude-schritt"><b>3</b> Antwortdatei hier einlesen – LeitWerk prüft sie, Änderungen erst als Vorschau</p>
+    <button id="claudeAntwort">Antwort einlesen…</button>
+    <input type="file" id="claudeAntwortDatei" accept="application/json,.json" hidden>
+    <div id="claudeErgebnis" class="claude-ergebnis" hidden></div>
+  </div>
+</div>
+
+<!-- Rückmeldefenster nach dem Entwurf in Claude Design (Tafel „Rückmeldefenster“,
+     https://claude.ai/artifact/2XPmp6udRURuTcuAUnPizQ). Speichert eine ZIP-Datei und öffnet
+     eine E-Mail an Franz – anhängen muss der Tester selbst, das kann der Browser nicht. -->
+<div id="rueckmeldungFenster" class="claude-fenster ueber-start rm-fenster" hidden role="dialog" aria-labelledby="rmTitel">
+  <div class="rm-karte">
+    <div class="rm-kopf">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
+      <h2 id="rmTitel">Rückmeldung an Franz</h2>
+      <button id="rmSchliessen" class="rm-zu" aria-label="Schließen">×</button>
+    </div>
+    <div class="rm-inhalt">
+      <label class="rm-feld">Was ist passiert?
+        <textarea id="rmPassiert" rows="3" placeholder="z. B. Beim Verschieben des Schützes ist die Leitung abgerissen."></textarea>
+      </label>
+      <label class="rm-feld">Was hast du erwartet?
+        <textarea id="rmErwartet" rows="2" placeholder="z. B. Die Leitung wandert mit."></textarea>
+      </label>
+      <label class="rm-feld">Auf welchem Blatt?
+        <select id="rmBlatt"></select>
+      </label>
+      <div class="rm-auto">
+        <span class="rm-auto-titel">Kommt automatisch mit</span>
+        <div class="rm-auto-zeile">
+          <div class="rm-bild" id="rmBild"></div>
+          <div class="rm-auto-text">
+            <span>Bild vom gewählten Blatt</span>
+            <span class="mono rm-technik" id="rmTechnik"></span>
+          </div>
+        </div>
+        <label class="rm-haken"><input type="checkbox" id="rmProjekt" checked> Das ganze Projekt mitschicken <span class="rm-leise">(hilft beim Nachstellen)</span></label>
+      </div>
+      <div class="rm-hinweis">
+        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M13.5 6.5l-6 6a2 2 0 0 0 2.8 2.8l6.4-6.4a3.5 3.5 0 0 0-5-5l-6.4 6.4a5 5 0 0 0 7 7l5.2-5.2"/></svg>
+        <span>Es wird eine Datei <strong class="mono" id="rmDateiname"></strong> gespeichert und eine E-Mail an Franz geöffnet. <strong>Die Datei bitte selbst anhängen</strong> – das kann der Browser nicht allein.</span>
+      </div>
+    </div>
+    <div class="rm-fuss">
+      <button id="rmAbbrechen">Abbrechen</button>
+      <button id="rmSenden" class="rm-hauptknopf">Speichern und E-Mail öffnen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Kurze Tour: ein Hinweiskästchen, das nacheinander auf fünf Bedienelemente zeigt. -->
+<div id="tourKarte" class="tour-karte" hidden role="dialog" aria-live="polite" aria-labelledby="tourTitel">
+  <span class="tour-schritt mono" id="tourSchritt"></span>
+  <h2 id="tourTitel"></h2>
+  <p id="tourText"></p>
+  <div class="tour-knoepfe">
+    <button id="tourEnde">Beenden</button>
+    <button id="tourWeiter" class="tour-weiter">Weiter</button>
+  </div>
+</div>
+
+<!-- Was ist neu · Bekannte Lücken: Inhalt aus version.js, damit er mit der Nummer wandert. -->
+<div id="lueckenFenster" class="claude-fenster ueber-start" hidden role="dialog" aria-labelledby="lueckenTitel">
+  <div class="claude-karte">
+    <div class="claude-kopf">
+      <h2 id="lueckenTitel">Testversion</h2>
+      <button id="lueckenSchliessen" class="symbolknopf" title="Schließen" aria-label="Schließen">×</button>
+    </div>
+    <p class="claude-schritt">Neu in dieser Version</p>
+    <ul class="luecken-liste" id="lueckenNeu"></ul>
+    <p class="claude-schritt">Bitte beachten</p>
+    <ul class="luecken-liste" id="lueckenBitten"></ul>
+    <p class="claude-schritt">Bekannte Lücken – bitte nicht extra melden</p>
+    <ul class="luecken-liste" id="lueckenListe"></ul>
+  </div>
+</div>
+
+<!-- Nur beim Drucken gefüllt: ein SVG je Blatt, siehe app.js „Drucken / PDF“. -->
+<div id="druckbereich" class="druckbereich"></div>
+
+<script src="raster.js"></script>
+<script src="modell.js"></script>
+<script src="querverweise.js"></script>
+<script src="speicher.js"></script>
+<script src="verlauf.js"></script>
+<script src="version.js"></script>
+<script src="zip.js"></script>
+<script src="symbole.js"></script>
+<script src="stromkreise.js"></script>
+<script src="kontakte.js"></script>
+<script src="erzeugte-blaetter.js"></script>
+<script src="pruefprotokoll.js"></script>
+<script src="vorlagen.js"></script>
+<script src="testprojekt.js"></script>
+<script src="claude-aufsatz.js"></script>
+<script src="app.js"></script>
+<script src="web-app.js"></script>
+</body>
+</html>

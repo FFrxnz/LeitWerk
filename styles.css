@@ -1,0 +1,600 @@
+/* Oberfläche nach dem Entwurf in Claude Design (Franz 2026-09-24, „Seele“):
+   https://claude.ai/artifact/GGJH33VZWy1t85bKLav7xc – Papiergrund, Tintenblau, Kupfer für
+   alles, was aus dem Plan kommt. Die Zeichnung selbst bleibt schwarz auf weiß (Druck).
+   Keine Webschriften: LeitWerk läuft offline, die Listen greifen auf Geräteschriften. */
+:root {
+  /* Zeichnung */
+  --blatt: #ffffff;
+  --linie: #1a1a1a;
+  --raster-linie: #d8d8d0;
+  --text: #1a1a1a;
+  --text-schwach: #6b6b63;
+  --akzent: #1d5f8a;
+  --gefahr: #a3332a;
+  /* Oberfläche */
+  --papier: #ece7dc;
+  --leiste: #f4f1ea;
+  --flaeche: #e3ddd0;
+  --rand: #d9d3c7;
+  --tinte: #1c2430;
+  --tinte-hell: #2a3442;
+  --tinte-rand: #3a4556;
+  --ui-text: #1c2430;
+  --ui-text-mittel: #3f4754;
+  --ui-text-schwach: #5b6270;
+  --kupfer: #b8622e;
+  --kupfer-text: #a5531f;
+  --kupfer-hell: #e0a27a;
+  --kupfer-grund: #fff3e8;
+  --kupfer-rand: #e8c3a0;
+  --schrift: system-ui, -apple-system, "Segoe UI", "IBM Plex Sans", sans-serif;
+  --schrift-schmal: "Barlow Condensed", "Roboto Condensed", "Arial Narrow", "DejaVu Sans Condensed", sans-serif-condensed, sans-serif;
+  --schrift-mono: "IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", "Roboto Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--schrift);
+  color: var(--ui-text);
+  background: var(--papier);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  font-size: 14px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--rand);
+  background: #fff;
+  color: var(--ui-text);
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover { background: var(--leiste); }
+button:active { background: var(--flaeche); }
+button.aktiv { background: var(--tinte); color: #f4f1ea; border-color: var(--tinte); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--kupfer); outline-offset: 1px; }
+.mono { font-family: var(--schrift-mono) !important; font-weight: 500; }
+.abstand { flex: 1; }
+
+/* Kopf: dunkel, Marke + Dateiknöpfe, darunter die Blätter als Registerreiter. */
+.kopfleiste { background: var(--tinte); color: #f4f1ea; }
+.kopf-zeile { display: flex; align-items: center; gap: 20px; padding: 10px 16px 0; flex-wrap: wrap; }
+.marke { display: flex; align-items: center; gap: 8px; font: 700 24px var(--schrift-schmal); letter-spacing: 0.05em; text-transform: uppercase; }
+.marke svg { fill: none; stroke: var(--kupfer); stroke-width: 2; stroke-linecap: round; }
+button.marke { background: none; border: none; color: inherit; padding: 0; min-height: 0; border-radius: 4px; }
+button.marke:hover { background: none; color: var(--kupfer-hell); }
+.projektname { font-size: 13px; color: #a9b0bc; }
+.dateiknoepfe { display: flex; gap: 6px; flex-wrap: wrap; }
+.dateiknoepfe button { background: transparent; color: #f4f1ea; border-color: var(--tinte-rand); }
+.dateiknoepfe button:hover { background: var(--tinte-hell); }
+.dateiknoepfe button.hauptknopf { background: var(--kupfer); border-color: var(--kupfer); color: #fff; font-weight: 600; }
+.dateiknoepfe button.hauptknopf:hover { background: #a5531f; }
+.blatttabs-zeile { display: flex; align-items: flex-end; gap: 2px; padding: 10px 16px 0; overflow-x: auto; }
+.blatttabs { display: flex; align-items: flex-end; gap: 2px; }
+.blatttabs button, .tab-plus {
+  flex-shrink: 0; min-height: 34px; padding: 0 12px; border: none; border-radius: 8px 8px 0 0;
+  background: var(--tinte-hell); color: #c9ced6; font-size: 13px; font-weight: 500; white-space: nowrap;
+}
+.blatttabs button:hover { background: var(--tinte-rand); }
+.blatttabs button.aktiv { min-height: 38px; background: var(--papier); color: var(--ui-text); font-weight: 600; font-size: 14px; }
+.tab-nummer { font-family: var(--schrift-mono); font-size: 11px; color: #8c95a3; margin-right: 2px; }
+.tab-nummer.erzeugt { color: var(--kupfer-hell); }
+.blatttabs button.aktiv .tab-nummer { color: var(--kupfer-text); font-size: 12px; }
+.tab-plus { margin-left: 6px; width: 38px; padding: 0; background: transparent; border: 1px dashed #4a5566; border-bottom: none; font-size: 18px; }
+.tab-plus:hover { background: var(--tinte-hell); }
+
+/* Werkzeugleiste: hell, Gruppen statt einer langen Knopfreihe. */
+.werkzeugleiste {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 8px 16px; background: var(--leiste); border-bottom: 1px solid var(--rand);
+}
+.gruppe { display: flex; align-items: center; gap: 6px; }
+.gruppen-name { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ui-text-schwach); }
+.trenner { width: 1px; height: 26px; background: var(--rand); }
+.werkzeugleiste select,
+.werkzeugleiste input[type="text"] {
+  font: inherit; font-size: 14px; height: 34px; padding: 0 8px;
+  border: 1px solid var(--rand); border-radius: 6px; background: #fff; color: var(--ui-text);
+}
+.werkzeugleiste input[type="text"] { width: 5em; }
+.werkzeugleiste #blattTitel { width: 11em; font-weight: 500; }
+.werkzeugleiste #kabelTyp { width: 9em; }
+.werkzeugleiste #betaetigungAuswahl, .werkzeugleiste #schienenVorlage { max-width: 190px; }
+button.gefahr { color: #8a3a12; }
+.umschalter { display: flex; padding: 3px; border-radius: 8px; background: var(--flaeche); }
+.umschalter button { min-height: 30px; border: none; background: transparent; font-size: 13px; font-weight: 500; }
+.umschalter button.aktiv { background: var(--tinte); color: #f4f1ea; font-weight: 600; }
+/* Die Auswahl: kupferner Kasten mit allem, was zum ausgewählten Bauteil gehört. */
+.auswahl-kasten {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  padding: 3px 4px 3px 10px; border-radius: 8px; background: var(--kupfer-grund); border: 1px solid #f0cba9;
+}
+.auswahl-kasten[hidden] { display: none; }
+.auswahl-kasten .gruppen-name { color: #8a3a12; }
+.werkzeugleiste .auswahl-kasten input[type="text"], .werkzeugleiste .auswahl-kasten select { height: 30px; border-color: var(--kupfer-rand); }
+.symbolknopf { display: flex; align-items: center; justify-content: center; width: 32px; min-height: 30px; padding: 0; border: none; background: transparent; color: #8a3a12; }
+.symbolknopf svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.symbolknopf:hover { background: #fbe3cf; }
+.symbolknopf:disabled { opacity: 0.35; cursor: default; background: transparent; }
+.verlauf .symbolknopf { color: var(--ui-text); }
+.anschlussnummern-schalter { display: flex; align-items: center; gap: 0.3em; font-size: 14px; color: var(--ui-text-mittel); }
+.zoom button { min-width: 34px; }
+
+.meldungsleiste {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  padding: 0.5em 16px;
+  border-bottom: 1px solid var(--rand);
+  font-size: 14px;
+}
+.meldungsleiste[hidden] { display: none; }
+.meldungsleiste.status { background: var(--leiste); color: var(--ui-text); }
+.meldungsleiste.warnung { background: var(--gefahr); color: white; border-color: var(--gefahr); }
+.meldungsleiste.rueckfrage { background: var(--tinte); color: white; border-color: var(--tinte); }
+.meldung-text { flex: 1; }
+.meldung-aktionen { display: flex; gap: 0.5em; }
+.meldung-aktionen button {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+.meldung-aktionen button:hover { background: rgba(255, 255, 255, 0.3); }
+.meldung-aktionen button:active { background: rgba(255, 255, 255, 0.45); }
+
+.rumpf {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.zeichenflaeche-bereich {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Das Blatt liegt auf einem Zeichentisch mit feinem Punktraster. */
+.zeichenflaeche {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  background-color: var(--flaeche);
+  background-image: radial-gradient(#cfc7b6 1px, transparent 1px);
+  background-size: 16px 16px;
+  touch-action: none;
+}
+.zeichenflaeche.werkzeug-platzieren,
+.zeichenflaeche.werkzeug-verbinden,
+.zeichenflaeche.werkzeug-stift { cursor: crosshair; }
+
+/* Symbolpalette: zwei Spalten Kacheln, Gruppen mit schmaler Überschrift. */
+.symbolpalette {
+  width: 176px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--rand);
+  background: var(--leiste);
+  padding: 10px 8px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: max-content; /* sonst drückt die feste Höhe die Kacheln zusammen */
+  align-content: start;
+  gap: 6px;
+}
+.paletten-kachel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 0;
+  padding: 4px 2px;
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  color: var(--ui-text);
+}
+.paletten-kachel:hover { background: var(--kupfer-grund); border-color: var(--kupfer-rand); }
+.paletten-kachel.aktiv { background: var(--tinte); border-color: var(--tinte); }
+.paletten-kachel.aktiv .paletten-vorschau .symbol-linie,
+.paletten-kachel.aktiv .paletten-vorschau .symbol-flaeche,
+.paletten-kachel.aktiv .paletten-vorschau .symbol-fuellung { stroke: white; }
+.paletten-kachel.aktiv .paletten-vorschau .symbol-flaeche { fill: var(--tinte); }
+.paletten-kachel.aktiv .paletten-vorschau .symbol-fuellung { fill: white; }
+.paletten-kachel.aktiv span { color: white; }
+.paletten-vorschau { width: 100%; height: 34px; }
+.paletten-kachel span { width: 100%; font-size: 11px; text-align: center; line-height: 1.15; hyphens: auto; overflow-wrap: break-word; }
+.blatt-hintergrund { fill: var(--blatt); stroke: none; }
+.blatt-rahmen { fill: none; stroke: var(--linie); stroke-width: 0.4; }
+.raster-linie { stroke: var(--raster-linie); stroke-width: 0.15; }
+.raster-beschriftung { font-size: 3.2px; fill: var(--text-schwach); text-anchor: middle; dominant-baseline: middle; }
+
+.schriftfeld-rahmen { fill: var(--blatt); stroke: var(--linie); stroke-width: 0.3; }
+.schriftfeld-text { font-size: 2.8px; fill: var(--text); }
+.schriftfeld-bezeichnung { font-size: 1.8px; fill: var(--text-schwach); }
+.schriftfeld-titel { font-size: 4px; font-weight: 600; fill: var(--text); }
+.schriftfeld-linie { stroke: var(--linie); stroke-width: 0.2; }
+.schriftfeld-label { font-size: 2.2px; fill: var(--text-schwach); }
+
+.bauteil-rahmen { fill: var(--blatt); stroke: var(--linie); stroke-width: 0.35; }
+.bauteil-bmk { font-size: 3.4px; fill: var(--text); font-weight: 600; text-anchor: end; }
+.bauteil-beschriftung { font-size: 2.6px; fill: var(--text-schwach); font-style: italic; text-anchor: middle; }
+/* Heller Rand um die Beschriftung unterbricht die Leitung, die durch sie hindurch läuft. */
+.bauteil-beschriftung { paint-order: stroke; stroke: var(--blatt); stroke-width: 0.9px; stroke-linejoin: round; }
+
+.klemme-kreis { fill: var(--blatt); stroke: var(--linie); stroke-width: 0.3; }
+.klemme-nummer { font-size: 2.6px; fill: var(--text); }
+.klemmenleiste-bmk { font-size: 3.4px; fill: var(--text); font-weight: 600; }
+
+.symbol-linie { fill: none; stroke: var(--linie); stroke-width: 0.35; }
+.symbol-flaeche { fill: var(--blatt); stroke: var(--linie); stroke-width: 0.35; }
+.symbol-fuellung { fill: var(--linie); stroke: var(--linie); stroke-width: 0.35; }
+.symbol-gestrichelt { stroke-dasharray: 0.8 0.6; }
+.symbol-buchstabe { font-size: 2.4px; fill: var(--text); text-anchor: middle; dominant-baseline: middle; }
+.symbol-messzeichen { font-size: 3.2px; fill: var(--text); text-anchor: middle; dominant-baseline: middle; }
+.symbol-messzeichen-klein { font-size: 1.9px; fill: var(--text); text-anchor: middle; dominant-baseline: middle; }
+
+.potenzial-linie { stroke: var(--akzent); stroke-width: 0.6; }
+.potenzial-name { font-size: 3.4px; fill: var(--akzent); font-weight: 600; }
+.potenzial-verweis { font-size: 2.6px; fill: var(--akzent); }
+
+.verbindung-linie { fill: none; stroke: var(--linie); stroke-width: 0.4; }
+.bauteil-auswahl { fill: none; stroke: var(--akzent); stroke-width: 0.4; stroke-dasharray: 1.2 0.8; }
+.anschluss-vorschau { fill: var(--akzent); stroke: none; }
+
+.schiene-linie { stroke: var(--linie); stroke-width: 0.5; }
+.schiene-name { font-size: 3.2px; fill: var(--text); font-weight: 600; }
+.strompfad-linie { stroke: var(--linie); stroke-width: 0.35; }
+.schiene-marke { stroke: var(--linie); stroke-width: 0.35; fill: none; }
+.schiene-punkt { fill: var(--linie); stroke: none; }
+.schiene-anschluss { fill: var(--blatt); stroke: var(--linie); stroke-width: 0.35; }
+.anbindung-fehler { stroke: #c62828; stroke-width: 0.6; }
+.textfeld { font-size: 2.8px; fill: var(--text); }
+.textfeld.kursiv { font-style: italic; }
+.paletten-ueberschrift { grid-column: 1 / -1; flex-shrink: 0; margin: 8px 0 0; font: 700 14px var(--schrift-schmal); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ui-text-schwach); }
+.paletten-ueberschrift:first-child { margin-top: 0; }
+.bindungsfelder { display: inline-flex; gap: 0.4em; align-items: center; }
+.bindungsfelder[hidden] { display: none; }
+
+.anschluss-nummer { font-size: 2.3px; fill: var(--text-schwach); }
+
+.baugruppenrahmen-linie { fill: none; stroke: var(--text-schwach); stroke-width: 0.3; stroke-dasharray: 1.5 1; }
+.baugruppenrahmen-bmk { font-size: 3.2px; fill: var(--text); font-weight: 600; }
+.baugruppenrahmen-beschriftung { font-size: 2.6px; fill: var(--text-schwach); font-style: italic; }
+
+.funktionsklammer-linie { stroke: var(--text); stroke-width: 0.3; }
+.funktionsklammer-text { font-size: 2.8px; fill: var(--text); }
+
+.querverweise-panel {
+  width: 280px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--rand);
+  background: var(--leiste);
+  padding: 16px;
+  overflow-y: auto;
+}
+.querverweise-panel h2 { font: 700 20px var(--schrift-schmal); letter-spacing: 0.03em; margin: 0 0 2px; }
+.querverweise-panel .hinweis { font-size: 12px; color: var(--ui-text-schwach); margin: 0 0 12px; }
+
+.querverweis-eintrag {
+  background: #fff;
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.querverweis-eintrag .name { font-family: var(--schrift-mono); font-weight: 500; font-size: 14px; color: var(--kupfer-text); }
+.querverweis-eintrag .vorkommen { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.querverweis-eintrag .vorkommen li { display: flex; flex-direction: column; gap: 1px; }
+.querverweis-eintrag .verweis { font-family: var(--schrift-mono); font-size: 12px; color: var(--ui-text-schwach); }
+
+/* Tablet quer und kleine Bildschirme: die Zeichnung braucht den Platz – Palette einspaltig,
+   Querverweise schmaler. */
+@media (max-width: 1199px) {
+  .symbolpalette { width: 104px; grid-template-columns: minmax(0, 1fr); }
+  .querverweise-panel { width: 230px; }
+}
+
+@media (max-width: 700px) {
+  .rumpf { flex-direction: column; }
+  .querverweise-panel { width: auto; border-left: none; border-top: 1px solid var(--rand); max-height: 30vh; }
+  /* Auf dem Tablet zählt jeder Millimeter Zeichenflächen-Höhe: die Palette liegt als
+     schmaler, waagerecht scrollender Streifen quer statt als Seitenspalte. */
+  .symbolpalette {
+    width: auto;
+    height: 84px;
+    display: flex;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--rand);
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .paletten-kachel { flex-shrink: 0; width: 64px; }
+}
+/* Erzeugtes Blatt (Inhaltsverzeichnis, …): Tabellen aus erzeugte-blaetter.js. */
+.tabelle-rahmen { fill: var(--blatt); stroke: var(--linie); stroke-width: 0.5; }
+.tabelle-linie { stroke: var(--linie); stroke-width: 0.2; }
+.tabelle-linie-stark { stroke: var(--linie); stroke-width: 0.4; }
+.tabelle-titel { font-size: 3.8px; font-weight: 600; fill: var(--text); text-anchor: middle; }
+.tabelle-untertitel { font-size: 3px; fill: var(--text); text-anchor: middle; }
+.tabelle-spaltenkopf { font-size: 2.8px; font-weight: 600; fill: var(--text); }
+.tabelle-zelle { font-size: 2.8px; fill: var(--text); }
+.tabelle-zelle.kursiv { font-style: italic; fill: var(--text-schwach); }
+/* Auf einem erzeugten Blatt gibt es nichts zu zeichnen – Zeichenwerkzeuge ausgegraut. */
+body.erzeugtes-blatt-aktiv .nur-zeichenblatt { opacity: 0.35; pointer-events: none; }
+
+/* Drucken / PDF (Stufe 2): nur der Druckbereich, ein Blatt je Seite A4 quer ohne
+   Seitenrand – das Blatt bringt seinen Rahmen selbst mit. Die SVGs sind 297 × 210 mm groß,
+   1 Einheit = 1 mm wie auf der Zeichenfläche. */
+.druckbereich { display: none; }
+@page { size: A4 landscape; margin: 0; }
+@media print {
+  body { display: block; height: auto; overflow: visible; background: white; }
+  body > :not(.druckbereich) { display: none !important; }
+  .druckbereich { display: block; }
+  .druck-seite { display: block; break-after: page; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .druck-seite:last-child { break-after: auto; }
+}
+
+/* Startseite nach dem Entwurf in Claude Design (https://claude.ai/artifact/2XPmp6udRURuTcuAUnPizQ):
+   links die Tintenleiste, rechts Neu anfangen, Zuletzt verwendet, Gewähr-Hinweis. */
+.startseite { position: fixed; inset: 0; z-index: 30; display: flex; background: var(--papier); overflow: auto; }
+.startseite[hidden] { display: none; }
+.start-leiste { width: 260px; flex-shrink: 0; background: var(--tinte); color: #f4f1ea; display: flex; flex-direction: column; gap: 28px; padding: 28px 20px 20px; }
+.start-marke { display: flex; align-items: center; gap: 10px; font: 700 30px var(--schrift-schmal); letter-spacing: 0.05em; text-transform: uppercase; }
+.start-marke svg { fill: none; stroke: var(--kupfer); stroke-width: 2; stroke-linecap: round; }
+.start-knoepfe { display: flex; flex-direction: column; gap: 6px; }
+.start-knoepfe button { min-height: 44px; border-radius: 8px; text-align: left; padding: 0 14px; font-size: 15px; background: transparent; color: #f4f1ea; border-color: var(--tinte-rand); }
+.start-knoepfe button:hover { background: var(--tinte-hell); }
+.start-knoepfe .start-hauptknopf { background: var(--kupfer); border-color: var(--kupfer); color: #fff; font-weight: 600; }
+.start-knoepfe .start-hauptknopf:hover { background: var(--kupfer-text); }
+.start-fuss { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; font-size: 13px; }
+.start-link { background: none; border: none; padding: 0; min-height: 24px; font-size: 13px; color: #a9b0bc; text-align: left; }
+.start-link:hover { background: none; color: #f4f1ea; text-decoration: underline; }
+.start-link.kupfern { color: var(--kupfer-hell); font-weight: 500; }
+.start-version { font-size: 12px; color: #8a92a0; }
+.start-haupt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 32px; padding: 36px 44px 24px; }
+.start-haupt h1 { margin: 0; font: 700 34px var(--schrift-schmal); letter-spacing: 0.02em; color: var(--tinte); }
+.start-abschnitt { display: flex; flex-direction: column; gap: 14px; }
+.start-abschnitt h2 { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ui-text-schwach); }
+.start-kacheln { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+.start-kachel { display: flex; flex-direction: column; align-items: stretch; gap: 2px; padding: 0 0 14px; border: 1px solid var(--rand); border-radius: 10px; background: #fff; text-align: left; overflow: hidden; min-height: 0; }
+.start-kachel:hover { background: #fff; border-color: var(--kupfer-rand); box-shadow: 0 2px 10px rgba(28, 36, 48, 0.08); }
+.start-kachel:disabled { opacity: 0.5; cursor: default; box-shadow: none; border-color: var(--rand); }
+.start-kachel.tour { background: var(--kupfer-grund); border-color: var(--kupfer-rand); }
+.kachel-bild { height: 120px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--rand); margin-bottom: 10px; }
+.start-kachel.tour .kachel-bild { border-color: var(--kupfer-rand); }
+.kachel-name { padding: 0 14px; font-weight: 600; font-size: 15px; }
+.kachel-text { padding: 0 14px; font-size: 13px; color: var(--ui-text-schwach); }
+.kachel-bild .bild-rand { fill: none; stroke: #c9c3b6; stroke-width: 1; }
+.kachel-bild .bild-kupfer { fill: none; stroke: var(--kupfer); stroke-width: 2; stroke-linecap: round; }
+.kachel-bild .bild-strich { fill: none; stroke: var(--linie); stroke-width: 1.2; stroke-linecap: round; }
+.kachel-bild .bild-strich .bild-kupfer { stroke-width: 1.2; }
+.kachel-bild .bild-tour { fill: none; stroke: var(--kupfer-text); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.start-zuletzt { flex: 1; min-height: 0; }
+.start-zeile { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.start-hinweis { font-size: 13px; color: var(--ui-text-schwach); }
+.start-liste { background: #fff; border: 1px solid var(--rand); border-radius: 10px; overflow: hidden; }
+.start-eintrag { display: flex; align-items: center; border-bottom: 1px solid var(--papier); background: #fff; }
+.start-eintrag:last-child { border-bottom: none; }
+.start-eintrag:hover { background: var(--leiste); }
+.start-eintrag.offen { background: var(--kupfer-grund); }
+.start-projekt { flex: 1; min-width: 0; display: flex; align-items: center; gap: 16px; min-height: 52px; padding: 10px 8px 10px 16px; border: none; border-radius: 0; background: transparent; text-align: left; }
+.start-projekt:hover { background: transparent; }
+.projekt-weg { width: 44px; min-height: 44px; margin-right: 6px; font-size: 20px; color: var(--ui-text-schwach); opacity: 0.35; }
+.start-eintrag:hover .projekt-weg, .projekt-weg:focus-visible { opacity: 1; }
+.projekt-weg:hover { color: var(--gefahr); background: #f6ddd9; }
+@media (hover: none) { .projekt-weg { opacity: 1; } }
+/* Rückfragen und Meldungen müssen über der Startseite stehen. */
+#startseite:not([hidden]) ~ .meldungsleiste { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 45; box-shadow: 0 8px 24px rgba(28, 36, 48, 0.3); }
+.projekt-bild { width: 46px; height: 32px; flex-shrink: 0; border: 1px solid var(--rand); display: flex; align-items: center; justify-content: center; }
+.projekt-bild svg { fill: none; stroke: #9a948a; stroke-width: 1; }
+.projekt-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.projekt-name { font-weight: 500; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.projekt-info { font-size: 13px; color: var(--ui-text-schwach); }
+.projekt-wann { font: 500 13px var(--schrift-mono); color: var(--ui-text-schwach); }
+.start-leer { padding: 16px; font-size: 14px; color: var(--ui-text-schwach); }
+.start-gewaehr { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--ui-text-schwach); border-top: 1px solid var(--rand); padding-top: 14px; }
+.start-gewaehr svg { flex-shrink: 0; fill: none; stroke: var(--kupfer-text); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.start-gewaehr strong { color: var(--tinte); font-weight: 600; }
+@media (max-width: 800px) {
+  .startseite { flex-direction: column; }
+  .start-leiste { width: auto; gap: 16px; padding: 16px; }
+  .start-haupt { padding: 20px 16px; gap: 24px; }
+}
+
+/* Formularblatt Prüfprotokoll (Stufe 5), nach dem Entwurf in Claude Design
+   (https://claude.ai/artifact/GGJH33VZWy1t85bKLav7xc): Papiergrund, Tintenblau, Kupfer
+   für alles, was aus dem Plan kommt. Tasten mindestens 44 px hoch fürs Tablet. Schriften
+   nur vom Gerät – LeitWerk lädt nichts aus dem Netz. */
+.formular {
+  --pp-grund: #ece7dc; --pp-karte: #fbfaf6; --pp-linie: #d9d3c7; --pp-linie-fein: #e6e0d4;
+  --pp-tinte: #1c2430; --pp-text-mittel: #3f4754; --pp-text-schwach: #5b6270;
+  --pp-kupfer: #a5531f; --pp-kupfer-grund: #fff3e8; --pp-kupfer-rand: #e8c3a0;
+  --pp-ok: #2f6b4f; --pp-nok: #b4461a;
+  --pp-schmal: "Barlow Condensed", "Roboto Condensed", "Arial Narrow", "DejaVu Sans Condensed", sans-serif-condensed, sans-serif;
+  --pp-mono: "IBM Plex Mono", ui-monospace, "DejaVu Sans Mono", "Roboto Mono", monospace;
+  flex: 1; min-height: 0; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 20px;
+  padding: 28px clamp(16px, 4vw, 40px) 48px;
+  background: var(--pp-grund); color: var(--pp-tinte);
+}
+.formular[hidden] { display: none; }
+.pp-kopf { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.pp-norm { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--pp-kupfer); }
+.pp-kopf h1 { margin: 2px 0 0; font: 700 40px/1.05 var(--pp-schmal); }
+.pp-stand { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; font-size: 14px; color: var(--pp-text-mittel); }
+.pp-stand b { font-family: var(--pp-mono); font-weight: 500; }
+.pp-balken { width: 260px; height: 8px; border-radius: 4px; background: var(--pp-linie); display: flex; overflow: hidden; }
+.pp-balken-ok { background: var(--pp-ok); }
+.pp-balken-nok { background: var(--pp-nok); }
+.pp-karte { display: flex; flex-direction: column; gap: 14px; padding: 20px 24px; border-radius: 12px; background: var(--pp-karte); border: 1px solid var(--pp-linie); }
+.pp-karte-kopf { display: flex; align-items: baseline; justify-content: space-between; }
+.pp-karte h2 { margin: 0; font: 700 24px var(--pp-schmal); letter-spacing: 0.02em; }
+.pp-abschnitt-stand { font-family: var(--pp-mono); font-size: 13px; color: var(--pp-text-schwach); }
+.pp-legende { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--pp-text-schwach); }
+.pp-legende-farbe { width: 10px; height: 10px; border-radius: 2px; background: var(--pp-kupfer-grund); border: 1px solid var(--pp-kupfer-rand); }
+.pp-raster { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 16px; }
+.pp-feld { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: var(--pp-text-mittel); }
+.pp-breit { grid-column: 1 / -1; }
+.formular input[type="text"] {
+  height: 44px; padding: 0 12px; border: 1px solid var(--pp-linie); border-radius: 8px;
+  background: #fff; font: 16px system-ui, sans-serif; color: var(--pp-tinte); min-width: 0;
+}
+.formular input.pp-plan { background: var(--pp-kupfer-grund); border-color: var(--pp-kupfer-rand); }
+.formular input.pp-mono { font-family: var(--pp-mono); font-weight: 500; }
+.formular input:focus-visible, .formular button:focus-visible { outline: 2px solid var(--pp-kupfer); outline-offset: 1px; }
+.pp-arten { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 10px; background: #e3ddd0; }
+.pp-arten button { height: 44px; border: none; border-radius: 7px; background: transparent; color: var(--pp-text-mittel); font-weight: 600; font-size: 15px; }
+.pp-arten button[aria-pressed="true"] { background: var(--pp-tinte); color: #f4f1ea; }
+.pp-punkt { display: flex; align-items: center; gap: 16px; min-height: 64px; padding: 8px 0; border-top: 1px solid var(--pp-linie-fein); flex-wrap: wrap; }
+.pp-punkt-text { display: flex; flex-direction: column; gap: 2px; flex: 1 1 260px; }
+.pp-punkt-text strong { font-size: 16px; font-weight: 600; }
+.pp-punkt-text span { font-size: 13px; color: var(--pp-text-schwach); }
+.pp-wert { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--pp-text-schwach); }
+.formular .pp-wert input, .formular .pp-tabelle-wert input { width: 96px; text-align: right; font-family: var(--pp-mono); font-weight: 500; }
+.pp-einheit { font-family: var(--pp-mono); font-size: 14px; color: var(--pp-text-mittel); min-width: 26px; }
+.pp-urteil { display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: #efeae0; }
+.pp-urteil button { height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 14px; border: none; border-radius: 7px; background: transparent; color: var(--pp-text-mittel); font-weight: 600; font-size: 14px; }
+.pp-urteil .pp-ok { min-width: 84px; }
+.pp-urteil .pp-nok { min-width: 104px; }
+.pp-urteil .pp-ok[aria-pressed="true"] { background: var(--pp-ok); color: #fff; }
+.pp-urteil .pp-nok[aria-pressed="true"] { background: var(--pp-nok); color: #fff; }
+.pp-messpunkte { padding: 0 0 12px; max-width: 480px; }
+.pp-tabelle { display: flex; flex-direction: column; border: 1px solid var(--pp-linie); border-radius: 8px; overflow: hidden; background: #fff; }
+.pp-tabelle-kopf, .pp-tabelle-zeile { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 6px 12px; }
+.pp-tabelle-kopf { background: #f1ece2; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--pp-text-mittel); }
+.pp-tabelle-kopf span:last-child { text-align: right; }
+.pp-tabelle-zeile { border-top: 1px solid #eee9df; }
+.pp-klemme { font-family: var(--pp-mono); font-size: 14px; color: var(--pp-kupfer); }
+.pp-tabelle-wert { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+.formular .pp-tabelle-wert input { height: 38px; width: 84px; }
+.pp-tabelle-leer { padding: 10px 12px; font-size: 13px; color: var(--pp-text-schwach); }
+.pp-abschluss.pp-alles-ok { background: #eef4ef; border-color: #9cc0a8; }
+.pp-erklaerung { display: flex; align-items: flex-start; gap: 14px; font-size: 17px; font-weight: 600; line-height: 1.4; }
+.pp-erklaerung input { width: 24px; height: 24px; margin: 1px 0 0; accent-color: var(--pp-ok); flex-shrink: 0; }
+.pp-hinweis { font-size: 14px; color: var(--pp-text-mittel); }
+.pp-hinweis.pp-warnung { color: #8a3a12; }
+.pp-unterschrift { height: 44px; border-bottom: 1.5px solid var(--pp-tinte); }
+
+/* Prüfprotokoll als Druckseite (SVG, 1 Einheit = 1 mm). */
+.pp-druck-titel { font-size: 4.2px; font-weight: 700; fill: var(--text); }
+.pp-druck-text { font-size: 2.7px; fill: var(--text); }
+.pp-druck-klein { font-size: 2.2px; fill: var(--text-schwach); }
+.pp-druck-fett { font-size: 3.1px; font-weight: 700; fill: var(--text); }
+.pp-druck-rahmen { fill: none; stroke: var(--linie); stroke-width: 0.35; }
+.pp-druck-linie { stroke: var(--linie); stroke-width: 0.2; }
+.pp-druck-kasten { fill: none; stroke: var(--linie); stroke-width: 0.3; }
+.pp-druck-kreuz { stroke: var(--linie); stroke-width: 0.4; }
+/* Auf dem Formular braucht es weder Symbolpalette noch Querverweise – der Platz geht ans Formular. */
+body.formular-aktiv .symbolpalette,
+body.formular-aktiv .querverweise-panel { display: none; }
+
+/* Claude-Aufsatz: Fenster über der Zeichenfläche, Ergebnis darin, Vorschau über die Meldungsleiste. */
+.claude-fenster { position: fixed; inset: 0; background: rgba(28, 36, 48, 0.35); display: flex; align-items: flex-start; justify-content: center; padding: 64px 16px 16px; z-index: 20; }
+.claude-fenster[hidden] { display: none; }
+.claude-karte { background: var(--leiste); border: 1px solid var(--rand); border-radius: 12px; width: min(560px, 100%); max-height: calc(100vh - 96px); overflow-y: auto; padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 12px 40px rgba(28, 36, 48, 0.25); font-family: var(--schrift); color: var(--ui-text); }
+.claude-fenster.ueber-start { z-index: 40; }
+.rm-fenster { background: rgba(28, 36, 48, 0.55); align-items: center; padding: 16px; }
+.rm-karte { width: min(620px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--leiste); border-radius: 12px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35); display: flex; flex-direction: column; font-family: var(--schrift); color: var(--ui-text); }
+.rm-kopf { background: var(--tinte); color: #f4f1ea; padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+.rm-kopf svg { fill: none; stroke: var(--kupfer-hell); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.rm-kopf h2 { margin: 0; flex: 1; font: 700 22px var(--schrift-schmal); letter-spacing: 0.04em; text-transform: uppercase; }
+.rm-zu { width: 36px; min-height: 36px; padding: 0; border-color: var(--tinte-rand); background: transparent; color: #f4f1ea; font-size: 20px; }
+.rm-zu:hover { background: var(--tinte-hell); }
+.rm-inhalt { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.rm-feld { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; }
+.rm-feld textarea, .rm-feld select { font: 400 14px var(--schrift); color: var(--ui-text); padding: 10px 12px; border: 1px solid var(--rand); border-radius: 8px; background: #fff; }
+.rm-feld textarea { resize: vertical; }
+.rm-feld select { min-height: 40px; padding: 0 10px; }
+.rm-auto { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; background: #fff; border: 1px solid var(--rand); border-radius: 8px; }
+.rm-auto-titel { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ui-text-schwach); }
+.rm-auto-zeile { display: flex; gap: 12px; align-items: center; }
+.rm-bild { width: 92px; height: 64px; flex-shrink: 0; border: 1px solid var(--rand); background: #fff; }
+.rm-bild svg { width: 100%; height: 100%; display: block; }
+.rm-auto-text { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--ui-text-mittel); min-width: 0; }
+.rm-technik { font-size: 12px; color: var(--ui-text-schwach); }
+.rm-haken { display: flex; align-items: center; gap: 10px; font-size: 14px; min-height: 36px; cursor: pointer; }
+.rm-haken input { width: 18px; height: 18px; accent-color: var(--kupfer); }
+.rm-leise { color: var(--ui-text-schwach); }
+.rm-hinweis { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; background: var(--kupfer-grund); border: 1px solid var(--kupfer-rand); border-radius: 8px; font-size: 13px; line-height: 1.45; color: var(--ui-text-mittel); }
+.rm-hinweis svg { fill: none; stroke: var(--kupfer-text); stroke-width: 1.6; stroke-linecap: round; flex-shrink: 0; margin-top: 1px; }
+.rm-hinweis strong { color: var(--tinte); }
+.rm-hinweis .mono { font-weight: 500; }
+.rm-fuss { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--rand); background: var(--papier); border-radius: 0 0 12px 12px; }
+.rm-fuss button { min-height: 44px; padding: 0 18px; border-radius: 8px; font-size: 15px; }
+.rm-fuss .rm-hauptknopf { background: var(--kupfer-text); border-color: var(--kupfer-text); color: #fff; font-weight: 600; }
+.rm-fuss .rm-hauptknopf:hover { background: #8a4418; }
+.tour-karte { position: fixed; z-index: 35; width: min(340px, calc(100vw - 32px)); background: var(--tinte); color: #f4f1ea; border-radius: 10px; padding: 14px 16px; box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35); display: flex; flex-direction: column; gap: 6px; font-family: var(--schrift); }
+.tour-karte[hidden] { display: none; }
+.tour-schritt { font-size: 12px; color: var(--kupfer-hell); }
+.tour-karte h2 { margin: 0; font: 700 20px var(--schrift-schmal); letter-spacing: 0.03em; }
+.tour-karte p { margin: 0; font-size: 14px; line-height: 1.45; color: #d9dde3; }
+.tour-knoepfe { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+.tour-knoepfe button { min-height: 36px; background: transparent; color: #f4f1ea; border-color: var(--tinte-rand); }
+.tour-knoepfe button:hover { background: var(--tinte-hell); }
+.tour-knoepfe .tour-weiter { background: var(--kupfer); border-color: var(--kupfer); color: #fff; font-weight: 600; }
+.tour-knoepfe .tour-weiter:hover { background: var(--kupfer-text); }
+.tour-ziel { outline: 3px solid var(--kupfer) !important; outline-offset: 2px; border-radius: 6px; position: relative; z-index: 34; }
+.pp-messwerte input.grenze-verletzt { border-color: var(--gefahr); background: #fbe9e6; color: var(--gefahr); font-weight: 600; }
+.luecken-liste { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.45; color: var(--ui-text); }
+.claude-kopf { display: flex; align-items: center; justify-content: space-between; }
+.claude-kopf h2 { margin: 0; font-size: 20px; }
+.claude-schritt { margin: 6px 0 0; font-size: 14px; color: var(--ui-text-mittel); }
+.claude-schritt b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--tinte); color: #f4f1ea; font-size: 12px; margin-right: 4px; }
+.claude-karte select, .claude-karte textarea { font: 15px var(--schrift); padding: 6px 8px; border: 1px solid var(--rand); border-radius: 6px; background: #fff; color: var(--ui-text); }
+.claude-karte textarea { resize: vertical; }
+.claude-karte button { align-self: flex-start; }
+.claude-karte button.hauptknopf { background: var(--kupfer); border-color: var(--kupfer); color: #fff; font-weight: 600; }
+.claude-ergebnis { border-top: 1px solid var(--rand); padding-top: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.claude-ergebnis[hidden] { display: none; }
+.claude-ergebnis .claude-antworttext { white-space: pre-wrap; background: #fff; border: 1px solid var(--rand); border-radius: 6px; padding: 8px 10px; }
+.claude-ergebnis ul { margin: 0; padding-left: 1.2em; }
+.claude-ergebnis .claude-fehler { color: var(--gefahr); }
+.claude-ergebnis .befund { cursor: pointer; }
+.claude-ergebnis .befund:hover { text-decoration: underline; }
+.claude-ergebnis .befund-fehler { color: var(--gefahr); }
+/* Vorschau einer Claude-Antwort: nur ansehen, nichts bearbeiten, bis übernommen oder verworfen. */
+.vorschau-aktiv .werkzeugleiste, .vorschau-aktiv .symbolpalette, .vorschau-aktiv .dateiknoepfe, .vorschau-aktiv .tab-plus, .vorschau-aktiv .projektname { pointer-events: none; opacity: 0.45; }
+
+/* Projektfenster: Beschriftung über jedem Feld, Änderungen als Zeilen. */
+.kopf-zeile button.projektname { background: transparent; border: 1px dashed var(--tinte-rand); border-radius: 4px; color: #d6d9df; font-size: 13px; padding: 4px 8px; cursor: pointer; }
+.kopf-zeile button.projektname:hover { border-color: var(--tinte-rand); color: #f4f1ea; }
+.projekt-felder { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.projekt-felder label, .projekt-aenderungen label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--ui-text-mittel); }
+.projekt-felder input, .projekt-aenderungen input { font: 15px var(--schrift); padding: 5px 7px; border: 1px solid var(--rand); border-radius: 6px; background: #fff; color: var(--ui-text); min-width: 0; }
+.projekt-felder .breit { grid-column: 1 / -1; }
+.projekt-aenderungen { display: flex; flex-direction: column; gap: 6px; }
+.aenderung-zeile { display: grid; grid-template-columns: 48px 140px minmax(0, 1fr) 104px 32px; gap: 6px; align-items: end; }
+.aenderung-zeile > *, .projekt-felder > * { min-width: 0; }
+@media (max-width: 560px) { .projekt-felder { grid-template-columns: 1fr; } .aenderung-zeile { grid-template-columns: 40px 1fr 1fr; } }
+
+/* Stromkreisverzeichnis am Bildschirm: breite Tabelle, waagerecht schiebbar am Tablet. */
+.sk-hinweis { margin: 0; font-size: 14px; color: var(--pp-text-mittel); }
+.sk-rahmen { overflow-x: auto; border: 1px solid var(--pp-linie); border-radius: 8px; background: #fff; }
+.sk-tabelle { border-collapse: collapse; width: 100%; min-width: 1100px; font-size: 14px; }
+.sk-tabelle th { background: #f1ece2; font-size: 12px; font-weight: 600; text-align: left; padding: 8px 6px; color: var(--pp-text-mittel); white-space: nowrap; }
+.sk-tabelle td { border-top: 1px solid #eee9df; padding: 4px 6px; vertical-align: middle; }
+.sk-tabelle .sk-bmk { font-family: var(--pp-mono); font-weight: 600; white-space: nowrap; }
+.sk-tabelle .sk-art { color: var(--pp-text-mittel); min-width: 150px; }
+.formular .sk-tabelle input { width: 100%; min-width: 60px; height: 36px; padding: 0 8px; border: 1px solid var(--pp-linie); border-radius: 6px; font: 14px system-ui, sans-serif; }
+.formular .sk-tabelle input.sk-pflicht:placeholder-shown { border-color: var(--pp-kupfer-rand); background: var(--pp-kupfer-grund); }
+.sk-plan { font-family: var(--pp-mono); font-size: 13px; padding: 4px 8px; white-space: nowrap; }
+.sk-tabelle.pp-messwerte { min-width: 820px; }
+.formular .pp-messwerte input { width: 72px; min-width: 56px; text-align: right; font-family: var(--pp-mono); }
+.symbol-buchstabe-gross { font-size: 3.6px; font-weight: 600; fill: var(--text); text-anchor: middle; dominant-baseline: middle; }
+.spiegel-nummer { font-size: 1.8px; fill: var(--text); }
+.spiegel-nummer.rechts { text-anchor: end; }
+.spiegel-ort { font-size: 2px; fill: var(--text); text-anchor: end; }
+.spulen-verweis { font-size: 2px; fill: var(--text-schwach); text-anchor: end; }
